@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=myteststorage;AccountKey=lalala+MK8FO5BkCSRvPBwPK0Snn1mZRsHxtk78nk0y8MaqAmxMP+hfDGs3itg/MJG0A==;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_EXTENSION_VERSION": "~3",
+    "ENABLE_ORYX_BUILD": "true",
+    "SCM_DO_BUILD_DURING_DEPLOYMENT": "1",
+    "BUILD_FLAGS": "UseExpressBuild",
+    "XDG_CACHE_HOME": "/tmp/.cache",
+    "EventHubConnection": "Endpoint=sb://mytesthub.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=lalalaAmNEQHowD3THrIrQpgqpONjNc0="
+  },
+  "ConnectionStrings": {}
+}

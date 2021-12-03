@@ -1,0 +1,9 @@
+/opt/nifi/logs/nifi-app.log {
+  daily
+  missingok
+  rotate 3
+  compress
+  delaycompress
+  notifempty
+  copytruncate
+}

@@ -1,0 +1,77 @@
+---
+- hosts: all
+  become: true
+  remote_user: "{{ remote_user }}"
+  gather_facts: no
+  tasks:
+
+    - name: install pakages
+      yum:
+        name: java-1.8.0-openjdk,java-1.8.0-openjdk-devel,logrotate
+        state: present
+      retries: 10
+      delay: 10
+      register: result
+      until: result is not failed
+
+    - name: download nifi
+      get_url:
+        url: https://archive.apache.org/dist/nifi/1.9.2/nifi-1.9.2-bin.tar.gz
+        dest: /opt/nifi-1.9.2-bin.tar.gz
+        timeout: 3600
+
+    - name: unarchive nifi
+      unarchive:
+        src: /opt/nifi-1.9.2-bin.tar.gz
+        dest: /opt
+        copy: no
+
+    - name: create link /opt/nifi
+      file:
+        src: /opt/nifi-1.9.2
+        path: /opt/nifi
+        state: link
+
+    - name: install nifi as service
+      shell: /opt/nifi/bin/nifi.sh install
+
+    - name: add java_home in start file nifi
+      lineinfile:
+        path: /etc/init.d/nifi
+        state: present
+        line: |
+          export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
+          export PATH=$JAVA_HOME/bin:$PATH
+        insertafter: nifi.sh
+
+    - name: Configure logrotate for nifi log
+      copy:
+        src: nifi_logrotate
+        dest: /etc/logrotate.d/nifi
+
+    - name: change java Xms and Xmx
+      lineinfile:
+        path: /opt/nifi/conf/bootstrap.conf
+        regexp: "^{{item.java_arg}}="
+        line: "{{item.java_arg}}={{item.new_value}}"
+      with_items:
+        - { java_arg: "java.arg.2", new_value: "-Xms1g"}
+        - { java_arg: "java.arg.3", new_value: "-Xmx6g"}
+
+    - name: configure nifi.properties
+      copy:
+        src: nifi.properties
+        dest: /opt/nifi/conf/nifi.properties
+
+    - name: Restart nifi service
+      systemd:
+        name: nifi
+        state: restarted
+        enabled: yes
+        daemon_reload: yes
+
+    - name: Wait before nifi started
+      wait_for:
+        host: localhost
+        port: 8080
+        timeout: 900
