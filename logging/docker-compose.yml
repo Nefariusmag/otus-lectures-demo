@@ -1,0 +1,25 @@
+version: '3.2'
+
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:6.8.18
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - '5044:5044'
+      - '5001:5000/tcp'
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+
+networks:
+  elk:
+    driver: brige
+
+# docker-compose up -it
