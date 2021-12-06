@@ -1,6 +1,40 @@
 version: '3.2'
 
 services:
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.18
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - '9200:9200'
+      - '9300:9300'
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    networks:
+      - elk
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.8.18
+    volumes:  
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - '5601:5601'
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+      
   logstash:
     image: docker.elastic.co/logstash/logstash:6.8.18
     volumes:
@@ -14,12 +48,24 @@ services:
         read_only: true
     ports:
       - '5044:5044'
-      - '5001:5000/tcp'
+      - '5000:5000/tcp'
+      - '5000:5000/udp'
+      - '9600:9600'
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
 networks:
   elk:
-    driver: brige
+    driver: bridge
 
-# docker-compose up -it
+volumes:
+  elasticsearch:
+
+# docker-compose up -d
+
+# http://51.250.14.212:9200/_alias
+# http://51.250.14.212:9200/logstash-2021.12.06/_search?pretty
