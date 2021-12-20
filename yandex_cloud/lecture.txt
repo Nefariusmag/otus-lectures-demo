@@ -1,0 +1,120 @@
+1. Скачиваем скрипт и запускаем:
+curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+
+2. Инициализируем:
+yc init
+
+3. Проверяем настройки вашего профиля CLI:
+yc config list
+
+--------------------------------------
+
+1. Создадим виртуальную машину:
+  yc compute instance create \
+    --name instance-example \
+    --hostname my-instance \
+    --memory=4 \
+    --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804,size=10GB \
+    --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+    --metadata serial-port-enable=1 \
+    --ssh-key ~/.ssh/id_rsa.pub
+
+2. Посмотреть вывод seral port:
+yc compute instance get-serial-port-output --name instance-example
+
+3. Отобразить информацию о созданной машине (нужна установленная утилита jq |sudo apt install jq|):
+yc compute instance get instance-example --format json | jq
+
+4. Подключимся к машине:
+ssh -i ~/.ssh/id_rsa yc-user@EXTERNAL_IP
+
+5. Создадим еще одну машину, но уже с начальной установкой nginx (команда запускается из директории с файлом metadata.yaml):
+  yc compute instance create \
+    --name instance-example2 \
+    --hostname my-instance2 \
+    --memory=4 \
+    --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-1804,size=20GB \
+    --network-interface subnet-name=default-ru-central1-a,nat-ip-version=ipv4 \
+    --metadata serial-port-enable=0 \
+    --metadata-from-file user-data=./metadata.yaml
+
+sleep 60
+curl <EXTERNAL_IP>
+
+6. Отобразим список созданных инстансов:
+yc compute instance list
+
+7. Удалим наши ВМ:
+yc compute instance delete instance-example instance-example2
+
+---------------------
+
+1. Создадим сервисный аккаунт:
+yc iam service-account create --name service
+
+2. Добавим роль нашему сервисному аккаунту:
+yc resource-manager folder add-access-binding default \
+   --role editor \
+   --subject serviceAccount:<ID_SERVICE_ACCOUNT>
+
+3. Создадим ключи доступа для аккаунта service:
+yc iam access-key create --service-account-name service --description "this key for my bucket"
+
+4. Установим AWS CLI:
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+5. Проверим версию:
+aws --version
+
+6. Сконфигурируем AWS CLI:
+aws configure
+
+7. Создать бакет:
+aws --endpoint-url=https://storage.yandexcloud.net s3 mb s3://otus
+
+alias aws-yc='aws --endpoint-url=https://storage.yandexcloud.net'
+
+8. Отобразить список созданных бакетов:
+aws-yc s3 ls
+
+9. Положить файл в бакет:
+aws-yc s3 cp metadata.yaml s3://otus-derokhin/folder1/metadata.yaml
+
+10. Получить список объектов в баките:
+aws-yc s3 ls --recursive s3://otus-derokhin
+
+11. Получить файл из бакета:
+aws-yc s3 cp s3://otus-derokhin/folder1/metadata.yaml testfile.yaml
+
+12. Удалить файл в бакете:
+aws-yc s3 rm s3://otus-derokhin/folder1/metadata.yaml
+
+13. Удалить бакет:
+aws-yc s3 rb s3://otus-derokhin
+
+----------------------------------------
+
+Поменять в specification.yaml id от network_id и subnet_ids и service_account_id
+
+1. Запустить создание группы из файла:
+yc compute instance-group create --file specification.yaml
+
+2. Получить список целевых групп:
+yc load-balancer target-group list
+
+3. Создать балансировщик с прикрепленной целевой группой:
+yc load-balancer network-load-balancer create \
+--region-id ru-central1 \
+--name load-balancer-for-my-service  \
+--listener name=my-listener,external-ip-version=ipv4,port=80 \
+--target-group target-group-id=enpdf6kl04idbb66e7jt,healthcheck-name=http,healthcheck-interval=2s,healthcheck-timeout=1s,healthcheck-unhealthythreshold=2,healthcheck-healthythreshold=2,healthcheck-http-port=80,healthcheck-http-path=/health
+
+while true; do curl <ip>; sleep 1; done
+
+4. Удалить балансировщик:
+yc load-balancer network-load-balancer delete load-balancer-for-my-service
+
+5. Удалить группу инстансов:
+yc compute instance-group delete test-group
