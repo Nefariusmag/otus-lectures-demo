@@ -1,0 +1,17 @@
+---
+
+- name: configure app servers
+  hosts: apps
+  gather_facts: no
+  tasks:
+  - name: pass task (app)
+    debug:
+      msg: "pass"
+
+- name: configure lb
+  hosts: lb
+  gather_facts: no
+  tasks:
+  - name: pass task (lb)
+    debug:
+      msg: "pass"
