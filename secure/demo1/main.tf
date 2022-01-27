@@ -55,7 +55,8 @@ resource "yandex_compute_instance" "monitoring-server" {
 }
 
 resource "yandex_compute_instance" "monitoring-client" {
-  name       = "monitoring-client"
+  count      = 1
+  name       = "monitoring-client-${count.index}"
   depends_on = [yandex_compute_instance.monitoring-server]
 
   resources {
@@ -104,4 +105,51 @@ resource "yandex_compute_instance" "monitoring-client" {
       "sudo systemctl enable wazuh-agent"
     ]
   }
+}
+
+resource "yandex_compute_instance" "monitoring-client-centos" {
+  count      = 1
+  name       = "monitoring-client-centos-${count.index}"
+  depends_on = [yandex_compute_instance.monitoring-server]
+
+  resources {
+    cores         = 2
+    memory        = 2
+    core_fraction = 20
+  }
+
+  boot_disk {
+    initialize_params {
+      image_id = "fd80le4b8gt2u33lvubr"
+    }
+  }
+
+  network_interface {
+    subnet_id = "e9bs05qo6i8u3dn5kfi0"
+    nat       = true
+  }
+
+  metadata = {
+    ssh-keys = "centos:${file("~/.ssh/id_rsa.pub")}"
+  }
+
+  allow_stopping_for_update = true
+
+  scheduling_policy {
+    preemptible = true
+  }
+
+  # connection {
+  #   type        = "ssh"
+  #   host        = self.network_interface.0.nat_ip_address
+  #   user        = "centos"
+  #   agent       = false
+  #   private_key = file("~/.ssh/id_rsa")
+  # }
+
+  # provisioner "remote-exec" {
+  #   inline = [
+  #
+  #   ]
+  # }
 }
