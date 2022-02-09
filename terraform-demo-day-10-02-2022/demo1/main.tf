@@ -41,19 +41,6 @@ resource "yandex_compute_instance" "vm-demo" {
     ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
   }
 
-  connection {
-    type        = "ssh"
-    host        = yandex_compute_instance.vm-demo.network_interface.0.nat_ip_address
-    user        = "ubuntu"
-    agent       = false
-    private_key = file("~/.ssh/id_rsa")
-  }
-
-  provisioner "file" {
-    source      = "files/test.txt"
-    destination = "/tmp/test.txt"
-  }
-
 }
 
 resource "yandex_vpc_network" "network-demo" {}
