@@ -9,6 +9,6 @@ variable "image_id" {
 variable "names_db" {
   type = map(string)
   default = {
-    dev1 = 2
+    dev1 = 1
   }
 }

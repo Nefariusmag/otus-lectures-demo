@@ -22,13 +22,13 @@ variable "count_app" {
 variable "names_db" {
   type = map(string)
   default = {
-    dev1 = 2
     dev2 = 2
   }
 }
 variable "names_front" {
   type = list(string)
   default = [
+    "reddit-front-1",
     "reddit-front-2"
   ]
 }

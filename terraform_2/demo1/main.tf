@@ -114,7 +114,7 @@ resource "yandex_compute_instance" "vm-db" {
 
 
 resource "yandex_compute_instance" "vm-front" {
-  count                     = length(var.names_front)
+  count                     = length(var.names_front) // 2 -> 1
   name                      = var.names_front[count.index]
   allow_stopping_for_update = true
   scheduling_policy {

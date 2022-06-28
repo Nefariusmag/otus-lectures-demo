@@ -19,7 +19,8 @@ variable "instances" {
   type = list(string)
   default = [
     "app-1",
-    "lb",
+    "app-2",
+    "lb"
   ]
 }
 

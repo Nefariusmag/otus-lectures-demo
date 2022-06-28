@@ -11,5 +11,3 @@ ${names[i]} ansible_host=${addrs[i]} ansible_user=${user}
 ${names[i]} ansible_host=${addrs[i]} ansible_user=${user}
 %{ endif ~}
 %{ endfor ~}
-
-

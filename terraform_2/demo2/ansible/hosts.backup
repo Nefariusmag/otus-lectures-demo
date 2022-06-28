@@ -1,7 +1,0 @@
-[lbs]
-lb ansible_host=62.84.119.116 ansible_user=ubuntu
-
-[apps]
-app-1 ansible_host=62.84.113.112 ansible_user=ubuntu
-
-
