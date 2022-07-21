@@ -1,0 +1,8 @@
+---
+- name: "Change default config"
+  become: yes
+  template:
+    src: site.conf.j2
+    dest: /etc/nginx/sites-enabled/default
+  notify:
+    - restart nginx

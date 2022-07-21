@@ -1,0 +1,18 @@
+---
+- name: Test request
+  uri:
+    url: http://localhost:{{nginx_port}}
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 5
+  delay: 1
+  timeout: 5
+
+- shell: systemctl status nginx
+  register: status_nginx
+
+- name: Test assert
+  assert:
+    that:
+      - "'Active: active (running)' in status_nginx.stdout"

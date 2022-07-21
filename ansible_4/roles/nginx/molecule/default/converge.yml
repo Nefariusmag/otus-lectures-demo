@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include derokhin.nginx"
+      include_role:
+        name: "derokhin.nginx"

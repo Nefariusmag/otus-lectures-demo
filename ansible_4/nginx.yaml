@@ -1,0 +1,15 @@
+---
+- hosts: all
+  name: Postgres deployment playbook
+  gather_facts: yes
+  tasks:
+    - include_role:
+        name: nginx
+
+
+  # pre-tasks:
+  #   - name: lalala
+  # roles:
+  #   - lalala
+  # post-tasks:
+  #   - name: lalala

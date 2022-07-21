@@ -1,0 +1,4 @@
+---
+# vars file for nasha-role
+packages: nginx
+nginx_port: 80
