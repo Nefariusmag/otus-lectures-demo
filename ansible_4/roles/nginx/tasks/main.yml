@@ -1,9 +1,5 @@
 ---
-# tasks file for nasha-role
-
 - include_tasks: install.yaml
-  tags:
-    - install
 
 - import_tasks: update.yaml
   tags:

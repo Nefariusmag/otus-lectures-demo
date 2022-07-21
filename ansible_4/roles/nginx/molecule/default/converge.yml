@@ -1,7 +1,8 @@
 ---
 - name: Converge
   hosts: all
+  gather_facts: false
   tasks:
-    - name: "Include derokhin.nginx"
-      include_role:
-        name: "derokhin.nginx"
+    - name: "Include nginx"
+      ansible.builtin.include_role:
+        name: "nginx"

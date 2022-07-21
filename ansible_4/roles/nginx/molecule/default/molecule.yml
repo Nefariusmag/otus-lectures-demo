@@ -2,13 +2,10 @@
 dependency:
   name: galaxy
 driver:
-  name: docker
+  name: delegated
 platforms:
-  - name: nginx
-    image: ubuntu:20.04
+  - name: instance
 provisioner:
   name: ansible
-  lint: |
-    ansible-lint
 verifier:
-  name: testinfra
+  name: ansible

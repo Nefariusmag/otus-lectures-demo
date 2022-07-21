@@ -1,12 +1,25 @@
 ---
-
-- name: "Install nginx"
+- name: "Install nginx Ubuntu"
   become: yes
   apt:
     name: "{{ packages }}"
     state: present
     update_cache: yes
+  when: ansible_os_family == "Debian"
+  tags:
+    - install
 
-- name: "Start and enable services 2"
+- name: "Install nginx CentOS"
+  become: yes
+  yum:
+    name: "{{ packages }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags:
+    - install
+
+- name: "Start and enable services"
   become: yes
   service: "name=nginx state=started enabled=yes"
+  tags:
+    - install

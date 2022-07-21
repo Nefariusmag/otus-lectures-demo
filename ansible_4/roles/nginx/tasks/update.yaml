@@ -1,8 +1,29 @@
 ---
-- name: "Change default config"
+- name: "Change default config for Ubuntu"
   become: yes
+  register: nginx_config
   template:
     src: site.conf.j2
     dest: /etc/nginx/sites-enabled/default
   notify:
     - restart nginx
+  when: ansible_os_family == "Debian"
+
+- name: "Change default config for CentOS"
+  become: yes
+  register: nginx_config
+  template:
+    src: nginx.confg.j2
+    dest: /etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+  when: ansible_os_family == "RedHat"
+
+# - debug: var=nginx_config
+
+- name: restart nginx
+  become: yes
+  service:
+    name: nginx
+    state: restarted
+  when: nginx_config.changed == true
