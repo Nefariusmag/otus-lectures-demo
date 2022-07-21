@@ -1,11 +1,25 @@
 ---
 - hosts: all
-  name: Postgres deployment playbook
+  name: Nginx deployment playbook
   gather_facts: yes
   tasks:
-    - include_role:
-        name: nginx
 
+    - name: Install python for Ansible for Ubuntu
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+      changed_when: False
+      when: ansible_os_family == "Debian"
+
+    - name: Install python for Ansible for CentOS
+      raw: test -e /usr/bin/python || (yum install -y python)
+      changed_when: False
+      when: ansible_os_family == "RedHat"
+
+    - import_role:
+        name: nginx
+      # tags:
+      #   - install
+      #   - update
+      #   - test
 
   # pre-tasks:
   #   - name: lalala
