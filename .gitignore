@@ -32,3 +32,7 @@ override.tf.json
 *.tfvars
 
 key.json
+
+*/venv/*
+.idea/*
+**/__pycache__/*

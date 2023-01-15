@@ -3,19 +3,23 @@
   name: Postgres deployment playbook
   gather_facts: yes
   vars:
-    pg_version: 14
-    # add_new_host: False
-    ip_mask: "0.0.0.0/0"
+    pg_version: 15
+    ip_mask:
+    # ip_mask: "0.0.0.0/0"
   vars_files:
     - vars.yaml
   tasks:
 
     - name: add apt source for postgres
       shell: sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+      register: apt_source
       become: yes
       tags:
         - install
         - install_2
+
+    - debug:
+        var: apt_source
 
     - name: add apt key for postgres
       shell: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
@@ -23,7 +27,7 @@
       tags:
         - install
 
-    - name: Install postgres
+    - name: Install postgres and nginx
       become: yes
       apt:
         name: "{{ item }}"
@@ -59,20 +63,17 @@
         - install
         - update
 
-    # - add_host:
-    #     name: test-lb
-    #     groups: lbs
-    #   when: add_new_host is True
+    - add_host:
+        name: test-lb
+        groups: apps
 
     # - debug:
     #     msg: "my_var = {{my_var}}"
-    #   when: add_new_host is True
     #
     # - name: Show message
     #   debugger: on_failed
     #   ping:
     #     data: "Var is {{wrong_var}}"
-    #   when: add_new_host is True
 
   handlers:
     - name: restart postgres
@@ -80,3 +81,5 @@
       service:
         name: postgresql
         state: restarted
+      tags:
+        - one
