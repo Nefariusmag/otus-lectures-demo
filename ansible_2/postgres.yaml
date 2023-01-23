@@ -1,71 +1,20 @@
 ---
-- hosts: apps
+- hosts: all
   name: Postgres deployment playbook
-  gather_facts: yes
+  gather_facts: no
+  remote_user: ubuntu
   vars:
     pg_version: 15
-    ip_mask:
-    # ip_mask: "0.0.0.0/0"
+    # ip_mask:
+    ip_mask: "0.0.0.0/0"
   vars_files:
     - vars.yaml
   tasks:
 
-    - name: add apt source for postgres
-      shell: sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-      register: apt_source
-      become: yes
-      tags:
-        - install
-        - install_2
-
-    - debug:
-        var: apt_source
-
-    - name: add apt key for postgres
-      shell: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-      become: yes
-      tags:
-        - install
-
-    - name: Install postgres and nginx
-      become: yes
-      apt:
-        name: "{{ item }}"
-        state: present
-        update_cache: yes
-      retries: 5
-      delay: 10
-      with_items:
-        - postgresql
-        - postgresql-contrib
-        - nginx
-      tags:
-        - install
-
-    - name: Start and enable 2 services
-      become: yes
-      service: "name={{ item.name }} state=started enabled={{ item.enable }}"
-      with_items:
-        - { name: postgresql, enable: yes }
-        - { name: nginx, enable: no }
-      tags:
-        - install
-
-    - name: Change default config
-      become: yes
-      ignore_errors: yes
-      template:
-        src: templates/pg_hba.conf.j2
-        dest: /etc/postgresql/{{pg_version}}/main/pg_hba.conf
-      notify:
-        - restart postgres
-      tags:
-        - install
-        - update
-
-    - add_host:
-        name: test-lb
-        groups: apps
+    - import_tasks: install.yaml
+      tags: install
+    - include_tasks: update.yaml
+      # tags: update
 
     # - debug:
     #     msg: "my_var = {{my_var}}"

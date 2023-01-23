@@ -1,22 +1,27 @@
 ---
-- hosts: app-1
-  name: Screen deployment play
+- hosts: all
+  name: deployment play 1
   remote_user: ubuntu
+  # become: yes
   vars:
-    package_1: screen
-    package_2: git
+    package_1:
+      - screen
+      - net-tools
   tasks:
-    - name: Install screen
+    - name: Install package_1
       become: yes
       apt:
         name: "{{ package_1 }}"
         state: present
         update_cache: yes
 
-- hosts: app-2
-  name: git deployment play
+- hosts: all
+  name: deployment play 2
+  remote_user: ubuntu
+  vars:
+    package_2: git,screen,htop,wget,curl
   tasks:
-    - name: Install git
+    - name: Install package_2
       become: yes
       apt:
         name: "{{ package_2 }}"

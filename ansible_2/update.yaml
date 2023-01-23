@@ -1,0 +1,16 @@
+---
+- name: Change default config
+  become: yes
+  ignore_errors: yes
+  register: default_config
+  template:
+    src: templates/pg_hba.conf.j2
+    dest: /etc/postgresql/{{pg_version}}/main/pg_hba.conf
+  notify:
+    - restart postgres
+  tags:
+    - install
+    - update
+
+- debug:
+    var: default_config.failed

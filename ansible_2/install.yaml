@@ -1,0 +1,36 @@
+---
+- name: add apt source for postgres
+  shell: sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+  become: yes
+  # tags:
+  #   - install
+
+- name: add apt key for postgres
+  shell: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+  become: yes
+  # tags:
+  #   - install
+
+- name: Install postgres and nginx
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  retries: 5
+  delay: 10
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - nginx
+  # tags:
+  #   - install
+
+- name: Start and enable 2 services
+  become: yes
+  service: "name={{ item.name }} state=started enabled={{ item.enable }}"
+  with_items:
+    - { name: postgresql, enable: yes }
+    - { name: nginx, enable: no }
+  # tags:
+  #   - install
