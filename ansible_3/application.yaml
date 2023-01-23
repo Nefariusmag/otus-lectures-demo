@@ -1,0 +1,24 @@
+---
+- hosts: apps
+  name: Postgres deployment playbook
+  # become: yes
+  gather_facts: yes
+  vars:
+    pg_version: 3
+  vars_files:
+    - "{{inventory_dir}}/vars.yaml"
+  tasks:
+    - include_role:
+        name: crivetimihai.virtualization.docker
+    - include_role:
+        name: postgres
+
+- hosts: lbs
+  name: Nginx deployment playbook
+  gather_facts: yes
+  ignore_errors: yes
+  become: yes
+  collections:
+    - nginxinc.nginx_core
+  roles:
+    - nginx

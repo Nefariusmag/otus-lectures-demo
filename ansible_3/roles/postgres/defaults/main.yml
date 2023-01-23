@@ -1,0 +1,3 @@
+---
+# defaults file for nasha-role
+pg_version: 1

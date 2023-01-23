@@ -1,0 +1,7 @@
+---
+# handlers file for nasha-role
+- name: restart postgres
+  become: yes
+  service:
+    name: postgresql
+    state: restarted

@@ -1,0 +1,26 @@
+---
+
+# make here mistake to show "include problem"
+
+- name: add apt source for postgres
+  shell: sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+  become: yes
+
+- name: add apt key for postgres
+  shell: wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+  become: yes
+
+- name: Install packages
+  become: yes
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  retries: 5
+  delay: 10
+
+- name: Start and enable service
+  become: yes
+  service: "name={{ item.name }} state=started enabled={{ item.enable }}"
+  with_items:
+    - { name: postgresql, enable: yes }

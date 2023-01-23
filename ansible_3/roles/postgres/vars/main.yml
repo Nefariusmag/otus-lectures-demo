@@ -1,0 +1,5 @@
+---
+# vars file for nasha-role
+packages: postgresql, postgresql-contrib
+pg_version: 5
+ip_mask: "0.0.0.0/0"

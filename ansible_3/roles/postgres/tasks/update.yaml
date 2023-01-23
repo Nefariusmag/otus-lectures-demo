@@ -1,0 +1,14 @@
+---
+- name: Change default config
+  become: yes
+  register: default_config
+  vars:
+    pg_version: 6
+  template:
+    src: templates/pg_hba.conf.j2
+    dest: /etc/postgresql/{{pg_version}}/main/pg_hba.conf
+  notify:
+    - restart postgres
+  tags:
+    - install
+    - update
