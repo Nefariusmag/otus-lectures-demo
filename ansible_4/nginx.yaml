@@ -4,22 +4,20 @@
   gather_facts: yes
   tasks:
 
-    - name: Install python for Ansible for Ubuntu
-      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
-      changed_when: False
-      when: ansible_os_family == "Debian"
+    # - name: Install python for Ansible for Ubuntu
+    #   become: yes
+    #   raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    #   changed_when: False
+    #   when: ansible_os_family == "Debian"
 
     - name: Install python for Ansible for CentOS
+      become: yes
       raw: test -e /usr/bin/python || (yum install -y python)
       changed_when: False
       when: ansible_os_family == "RedHat"
 
     - import_role:
         name: nginx
-      # tags:
-      #   - install
-      #   - update
-      #   - test
 
   # pre-tasks:
   #   - name: lalala

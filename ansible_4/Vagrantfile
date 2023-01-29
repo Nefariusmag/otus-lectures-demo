@@ -1,0 +1,24 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.provider :virtualbox do |v|
+    v.memory = 512
+  end
+
+  config.vm.define "nginxserver" do |s|
+    s.vm.box = "ubuntu/xenial64"
+    s.vm.hostname = "nginxserver"
+    s.vm.network :private_network, ip: "192.168.56.10"
+
+    s.vm.provision "shell",
+      inline: "sudo apt -y update && sudo apt install -y python-minimal"
+
+    s.vm.provision "ansible" do |ansible|
+      ansible.playbook = "nginx.yml"
+      ansible.groups = {
+      "nginx-1" => ["apps"],
+      "nginx-1:vars" => {"nginx_port" => "80"}
+      }
+    end
+  end
+
+end

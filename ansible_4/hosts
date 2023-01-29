@@ -1,2 +1,2 @@
 [apps]
-app-1 ansible_host=10.26.237.132 ansible_user=root
+nginx-1 ansible_host=10.161.192.21 ansible_user=

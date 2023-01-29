@@ -9,7 +9,7 @@
   delay: 1
   timeout: 5
 
-# - debug: var=_result
+- debug: var=_result
 
 - shell: systemctl status nginx
   register: status_nginx
@@ -19,12 +19,16 @@
     that:
       - "'Active: active (running)' in status_nginx.stdout"
 
+- debug: var=status_nginx
+
 - name: Get stats of a file
   stat:
     path: /var/log/nginx/access.log
   register: status_log
 
-- name: Fail if the file does not belong to 'root'
+- debug: var=status_log
+
+- name: Fail if the file does not belong to 'www-data'
   fail:
     msg: "Whoops! file ownership has changed"
-  when: status_log.stat.pw_name != 'root'
+  when: status_log.stat.pw_name != 'www-data'
