@@ -1,7 +1,6 @@
 ---
 - hosts: apps
   name: Postgres deployment playbook
-  # become: yes
   gather_facts: yes
   vars:
     pg_version: 3
@@ -10,6 +9,11 @@
   tasks:
     - include_role:
         name: crivetimihai.virtualization.docker
+
+    # - name: task
+    #   shell: ls -l
+    #   delegate_to: lbs
+
     - include_role:
         name: postgres
 

@@ -1,0 +1,8 @@
+---
+collections:
+  - name: nginxinc.nginx_core
+    version: 0.7.1
+  - name: crivetimihai.virtualization
+    version: 1.0.33
+  - name: community.postgresql
+    version: 2.3.2

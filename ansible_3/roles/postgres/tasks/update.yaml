@@ -4,7 +4,7 @@
   register: default_config
   vars:
     pg_version: 6
-  template:
+  ansible.builtin.template:
     src: templates/pg_hba.conf.j2
     dest: /etc/postgresql/{{pg_version}}/main/pg_hba.conf
   notify:
